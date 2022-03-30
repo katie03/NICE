@@ -317,14 +317,7 @@ while trial <= 6:
     else:
         tk.sendCommand("link_sample_data  = LEFT,RIGHT,GAZE,GAZERES,PUPIL,HREF,AREA,STATUS,INPUT")
 
-    #opens csv file 
-    with open('/Users/katiechen/Downloads/NICE/therapist.csv', 'w') as csvfile:
-        writer = csv.writer(csvfile, delimiter = ',') 
-        
-    with open('/Users/katiechen/Downloads/NICE/therapist.csv', 'a') as csvfile:
-        writer = csv.writer(csvfile, delimiter = ',')
-        writer.writerows(zip('word', 'cue_input'))
-        
+
     #opens the microphone
     mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
     #starts recording
