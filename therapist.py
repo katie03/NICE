@@ -87,8 +87,8 @@ if not dummyMode:
 else:
     tk = pylink.EyeLink(None)
 
-begin_session = 'session_starts.m4a'
-end_session = 'session_ends.m4a'
+begin_session = 'session_starts.wav'
+end_session = 'session_ends.wav'
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition_no, duration, video):
     #abort mechanism for if need to stop in the middle
@@ -102,6 +102,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         #mic.start(when=None, waitForStart=0, stopTime=None)  
         #core.wait(0.0)
         playsound(begin_session)
+        print(AudioDeviceInfo.deviceName)
         #core.wait(0.0)  # wait duration of time 
         
         #play "this session starts now" command
@@ -192,8 +193,8 @@ def runTrial(window, mr_settings, trial_index, on, off, reps):
 
     # launch: operator selects Scan or Test (emulate); see API documentation
     vol = launchScan(window, mr_settings, globalClock=core.Clock())
-    key = event.waitKeys(keyList=([expInfo['sync']]), timeStamped = True)
-    print(key)
+    #key = event.waitKeys(keyList=([expInfo['sync']]), timeStamped = True)
+    #print(key)
 
     # send the standard "TRIALID" message to mark the start of a trial
     # see Data Viewer User Manual, Section 7: Protocol for EyeLink Data to Viewer Integration
@@ -319,12 +320,13 @@ while trial <= 6:
 
 
     #opens the microphone
-    mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
+    mic = Microphone(device=2, channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
     #starts recording
     mic.start(when=None, waitForStart=0, stopTime=None) 
     print(AudioDeviceInfo.deviceName)
     print("Microphone started recording")
     core.wait(0.0)
+    #sentence = TranscriptionResult(words)
         
     # show some instructions here.
     msg = visual.TextStim(win, text = 'Press ENTER twice to calibrate the tracker\nPress Esc if not eye-tracking')
