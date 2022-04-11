@@ -4,7 +4,7 @@
 # If you need to use a screen units other than 'pix', which we do not recommend as the gaze coordinates
 # returned by pylink is in 'pix' units, please make sure to properly set the size of the cursor and the
 # position of the gaze. However, the calibration/validation routine should work fine regardless of the
-# screen units.
+# screen units.12
 
 # import libraries
 from __future__ import division
@@ -38,9 +38,9 @@ if dlg.OK == False:
 
 expName = u'Hyperscan - eyecontact'
 if participant['therapist or patient'] == 'therapist':
-    expInfo = {'participant':'hyperscan_' + participant['participant'] + 't', 'condition': 1, 'TR': 1.000, 'volumes': 20, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
+    expInfo = {'participant':'hyperscan_' + participant['participant'] + 't', 'condition': 1, 'TR': 1.000, 'volumes': 10, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
 else:
-    expInfo = {'participant':'hyperscan_' + participant['participant'] + 'p', 'condition': 1, 'TR': 1.000, 'volumes': 20, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
+    expInfo = {'participant':'hyperscan_' + participant['participant'] + 'p', 'condition': 1, 'TR': 1.000, 'volumes': 10, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
 
 
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, order=['participant', 'condition', 'TR', 'volumes', 'sync'])
@@ -92,25 +92,24 @@ end_session = 'session_ends.wav'
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition_no, duration, video):
     #abort mechanism for if need to stop in the middle
+    
     aborted = False
     prefs.general['audioDriver'] = [u'jack']
     if condition_no == 1:  
         #win.winHandle.minimize()
         #opens the microphone
-        #mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = 40.0, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
-        #starts recording
-        #mic.start(when=None, waitForStart=0, stopTime=None)  
-        #core.wait(0.0)
         playsound(begin_session)
-        print(AudioDeviceInfo.deviceName)
-        #core.wait(0.0)  # wait duration of time 
         
-        #play "this session starts now" command
-        #playsound(begin_session)
+        #device = index of device, add to first parameter of mic 
+        mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
+        #starts recording
+        mic.start(when=None, waitForStart=0, stopTime=None) 
+        print("Microphone started recording")
+        core.wait(0.0)
         #give instructions for when to click buttons to start talking 
-        msg = visual.TextStim(win, text = 'Press 1 to start talking, Press 2 when finished talking')
+        '''msg = visual.TextStim(win, text = 'Press 1 to start talking, Press 2 when finished talking')
         msg.draw()
-        win.flip()
+        win.flip()'''
         
         #kb = keyboard.Keyboard() only necessary for start and stop 
         #keys = kb.getKeys()
@@ -121,7 +120,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
             #keys = kb.getKeys()
             #displays text if 1 is pressed, therapist/patient is talking
             #if '1' in keys:
-            if event.getKeys(['1']):
+            '''if event.getKeys(['1']):
                 msg.text = participant + ' is talking...'
                 msg.draw()
                 win.flip()
@@ -130,25 +129,25 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
             elif event.getKeys(['2']): 
                 msg.text = participant + ' is done talking'
                 msg.draw()
-                win.flip()
-            elif event.getKeys(['q']):
+                win.flip()'''
+            if event.getKeys(['q']):
                 aborted = True
                 return aborted
             elif event.getKeys(['escape']):
                 win.close()
                 core.quit()
 
-        # play "the session ends" command
-        playsound(end_session)
-        
         mic.stop()  # stop recording
         audioClip = mic.getRecording()
         print("Duration of conversation is: ", duration) 
         print("Total duration of audio clip is: ", audioClip.duration)  # should be ~duration time + plus time of session starts/session ends wav files seconds
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
-        audioClip.save(dateandtime)  # save the recorded audio as a 'wav' file
         
+        # play "the session ends" command
+        playsound(end_session)
         
+        # save the recorded audio as a 'wav' file
+        audioClip.save(dateandtime)  
         
         #win.winHandle.maximize()
     else:
@@ -320,13 +319,13 @@ while trial <= 6:
 
 
     #opens the microphone
-    mic = Microphone(device=2, channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
+    '''mic = Microphone(device=2, channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
     #starts recording
     mic.start(when=None, waitForStart=0, stopTime=None) 
     print(AudioDeviceInfo.deviceName)
     print("Microphone started recording")
     core.wait(0.0)
-    #sentence = TranscriptionResult(words)
+    #sentence = TranscriptionResult(words)'''
         
     # show some instructions here.
     msg = visual.TextStim(win, text = 'Press ENTER twice to calibrate the tracker\nPress Esc if not eye-tracking')
