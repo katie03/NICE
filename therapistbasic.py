@@ -85,30 +85,37 @@ if not dummyMode:
 else:
     tk = pylink.EyeLink(None)
 
-begin_session = 'session_starts.wav'
+#begin_session = 'session_starts.wav'
 end_session = 'session_ends.wav'
+
 #path1= '/Users/katiechen/Downloads/NICE'
 #os.chdir(path1)
 #begin_session = sound.Sound('session_starts.wav')
 '''end_session = sound.Sound('session_ends.wav', stereo=True, hamming=True)
 end_session.setVolume(1.0)
 end_session.setSound('session_ends.wav', secs=2, hamming=True)'''
+'''song1= sound.Sound('session_starts.wav', stereo = True, hamming = True)
+song1.setVolume(1.0)
 
-path1='/Users/katiechen/Downloads/NICE'
-os.chdir(path1)
-song1= sound.Sound('session_starts.wav')
 song2= sound.Sound('session_ends.wav')
+song2.setVolume(1.0)'''
+
 #song3= sound.Sound('close_eyes.wav')
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, win,on_dur, off_dur, condition_no, duration, video):
+    path1='/Users/katiechen/Downloads/NICE'
+    os.chdir(path1)
+    session_starts = sound.Sound('session_starts.wav')
+    session_ends = sound.Sound('session_ends.wav')
     #abort mechanism for if need to stop in the middle
-    aborted = False
-    #prefs.general['audioDriver'] = [u'jack']
-    if condition_no == 1:  
+    #aborted = False
+    if condition_no == 1: #1: eyeopentask
         #win.winHandle.minimize()
-        song1.play()
-        # play "this session starts now" command
-        #playsound(begin_session)
+
+        # play "open your eyes" command followed by 
+        session_starts.play()
+        #song2.play()
+
         # wait for on_dur seconds
         clock = core.Clock()
         while(clock.getTime() < duration):
@@ -118,16 +125,24 @@ def sessionStartEnd(participant_no, win,on_dur, off_dur, condition_no, duration,
             elif event.getKeys(['escape']):
                 win.close()
                 core.quit()
-
-        # play "the session ends" command
-        #playsound(end_session)
-        song2.play()
-        print("played")
+                
+        # play "close your eyes" command
+        #song2.pause()
+        session_ends.play()
         
-        #win.winHandle.maximize()
+        time = 2
+        clock = core.Clock()
+        while(clock.getTime() < 2):
+            if event.getKeys(['q']):
+                aborted = True
+                return aborted
+            elif event.getKeys(['escape']):
+                win.close()
+                core.quit()
+        
     else:
         print("Condition must be 1")
-    return aborted
+    return False
 
 
 #### DEFINE FUNCTION TO RECORD - INCLUDES STIMULUS PROGRAM
