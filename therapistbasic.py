@@ -85,7 +85,7 @@ if not dummyMode:
 else:
     tk = pylink.EyeLink(None)
 
-#begin_session = 'session_starts.wav'
+begin_session = 'session_starts.wav'
 end_session = 'session_ends.wav'
 
 #path1= '/Users/katiechen/Downloads/NICE'
@@ -103,17 +103,19 @@ song2.setVolume(1.0)'''
 #song3= sound.Sound('close_eyes.wav')
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, win,on_dur, off_dur, condition_no, duration, video):
-    path1='/Users/katiechen/Downloads/NICE'
+    '''path1='/Users/katiechen/Downloads/NICE'
     os.chdir(path1)
-    session_starts = sound.Sound('session_starts.wav')
-    session_ends = sound.Sound('session_ends.wav')
+    session_starts = sound.Sound('session_starts.wav', stereo = False)
+    session_ends = sound.Sound('session_ends.wav', stereo = False)'''
     #abort mechanism for if need to stop in the middle
     #aborted = False
     if condition_no == 1: #1: eyeopentask
         #win.winHandle.minimize()
 
         # play "open your eyes" command followed by 
-        session_starts.play()
+        playsound(begin_session)
+        #session_starts.play()
+        #time = 3
         #song2.play()
 
         # wait for on_dur seconds
@@ -128,11 +130,11 @@ def sessionStartEnd(participant_no, win,on_dur, off_dur, condition_no, duration,
                 
         # play "close your eyes" command
         #song2.pause()
+        playsound(end_session)
         session_ends.play()
-        
-        time = 2
+    
         clock = core.Clock()
-        while(clock.getTime() < 2):
+        while(clock.getTime() < time):
             if event.getKeys(['q']):
                 aborted = True
                 return aborted

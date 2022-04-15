@@ -14,7 +14,7 @@ from EyeLinkCoreGraphicsPsychoPy import EyeLinkCoreGraphicsPsychoPy
 
 import pylink, numpy, os, random, sys, time
 
-from psychopy import visual, core, gui, event, monitors
+from psychopy import sound, visual, core, gui, event, monitors
 
 from playsound import playsound 
 
@@ -27,6 +27,30 @@ from psychopy.preferences import prefs
 import time 
 import os
 import csv 
+
+#repeat with ethan's
+#from __future__ import absolute_import, division
+
+from psychopy import locale_setup
+from psychopy import prefs
+from psychopy import sound, gui, visual, core, data, event, logging, clock, colors
+from psychopy.constants import (NOT_STARTED, STARTED, PLAYING, PAUSED,
+                                STOPPED, FINISHED, PRESSED, RELEASED, FOREVER)
+
+import numpy as np  # whole numpy lib is available, prepend 'np.'
+from numpy import (sin, cos, tan, log, log10, pi, average,
+                   sqrt, std, deg2rad, rad2deg, linspace, asarray)
+from numpy.random import random, randint, normal, shuffle, choice as randchoice
+import os  # handy system and path functions
+import sys  # to get file system encoding
+
+from psychopy.hardware import keyboard
+
+import socket
+import time
+import queue
+import threading
+import random
 
 
 #### Get subject info with GUI ########################################################
@@ -87,19 +111,39 @@ if not dummyMode:
 else:
     tk = pylink.EyeLink(None)
 
-begin_session = 'session_starts.wav'
-end_session = 'session_ends.wav'
+session_starts = 'session_starts.wav'
+session_ends = 'session_ends.wav'
+'''path1= '/Users/katiechen/Downloads/NICE'
+os.chdir(path1)
+song1 = sound.Sound('session_starts.wav')
+song2 = sound.Sound('session_ends.wav')
+'''
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition_no, duration, video):
     #abort mechanism for if need to stop in the middle
-    
-    aborted = False
-    prefs.general['audioDriver'] = [u'jack']
+    '''path1='/Users/katiechen/Downloads/NICE'
+    os.chdir(path1)
+    session_starts = sound.Sound('session_starts.wav')
+    session_ends = sound.Sound('session_ends.wav')
+    time = 3'''
+    #prefs.general['audioDriver'] = [u'jack']
     if condition_no == 1:  
         #win.winHandle.minimize()
         #opens the microphone
-        playsound(begin_session)
+        playsound(session_starts)
+        '''session_starts.play()
         
+        clock = core.Clock()
+        while(clock.getTime() < time):
+            if event.getKeys(['q']):
+                aborted = True
+                return aborted
+            elif event.getKeys(['escape']):
+                win.close()
+                core.quit()
+                
+        session_starts.play()'''
+                
         #device = index of device, add to first parameter of mic 
         mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
         #starts recording
@@ -131,8 +175,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
                 msg.draw()
                 win.flip()'''
             if event.getKeys(['q']):
-                aborted = True
-                return aborted
+                return True
             elif event.getKeys(['escape']):
                 win.close()
                 core.quit()
@@ -144,7 +187,17 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
         
         # play "the session ends" command
-        playsound(end_session)
+        playsound(session_ends)
+        '''session_ends.play()
+        
+        clock = core.Clock()
+        while(clock.getTime() < time):
+            if event.getKeys(['q']):
+                aborted = True
+                return aborted
+            elif event.getKeys(['escape']):
+                win.close()
+                core.quit()'''
         
         # save the recorded audio as a 'wav' file
         audioClip.save(dateandtime)  
@@ -152,7 +205,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         #win.winHandle.maximize()
     else:
         print("Condition must be 1")
-    return aborted
+    return False
 
 
 #### DEFINE FUNCTION TO RECORD - INCLUDES STIMULUS PROGRAM
