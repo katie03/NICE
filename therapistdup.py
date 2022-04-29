@@ -63,9 +63,9 @@ if dlg.OK == False:
 
 expName = u'Hyperscan - eyecontact'
 if participant['therapist or patient'] == 'therapist':
-    expInfo = {'participant':'hyperscan_' + participant['participant'] + 't', 'condition': 1, 'TR': 1.000, 'volumes': 10, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
+    expInfo = {'participant':'hyperscan_' + participant['participant'] + 't', 'condition': 1, 'TR': 1.000, 'volumes': 20, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
 else:
-    expInfo = {'participant':'hyperscan_' + participant['participant'] + 'p', 'condition': 1, 'TR': 1.000, 'volumes': 10, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
+    expInfo = {'participant':'hyperscan_' + participant['participant'] + 'p', 'condition': 1, 'TR': 1.000, 'volumes': 20, 'sync':'5', 'ON': 20, 'OFF': 20, 'EyeTracking?': False}
 
 
 dlg = gui.DlgFromDict(dictionary=expInfo, title=expName, order=['participant', 'condition', 'TR', 'volumes', 'sync'])
@@ -121,10 +121,10 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         
         clock = core.Clock()
         #displays the session starts
-        msg = visual.TextStim(win, text = 'The session starts now')
+        msg = visual.TextStim(win, text = 'the session starts now')
         msg.draw()
         win.flip()
-        while clock.getTime() < 3:
+        while clock.getTime() < 2:
             if event.getKeys(['q']):
                 return True
             elif event.getKeys(['escape']):
@@ -144,24 +144,37 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         print("Microphone started recording")
         core.wait(0.0)
         
+        clock.reset()
+        print(clock.getTime())
         #kb = keyboard.Keyboard() only necessary for start and stop 
         #keys = kb.getKeys()
         # wait for on_dur seconds
+        i = 1
+        iterations = int(duration/5)
+        print(iterations)
         while(clock.getTime() < duration):
             #kb = keyboard.Keyboard() 
             #keys = kb.getKeys()
             #displays text if 1 is pressed, therapist/patient is talking
             #if '1' in keys:
-            '''if event.getKeys(['1']):
-                msg.text = participant + ' is talking...'
-                msg.draw()
-                win.flip()
-            #displays text if 2 is pressed, therapist/patient is done talking
-            #elif '2' in keys:
-            elif event.getKeys(['2']): 
-                msg.text = participant + ' is done talking'
-                msg.draw()
-                win.flip()'''
+            #if (clock.getTime() >= 5*i and clock.getTime() <=5.001*i):
+            for i in range(iterations):
+                if (clock.getTime() >=5*i and clock.getTime()<=5.01*i):
+                    print('reached this if statement' + str(clock.getTime()))
+                    mic.stop() 
+                    audio1 = mic.getRecording() 
+                    mic.start()
+                    list_of_words = (audio1.transcribe(engine='sphinx')).words
+                    word = ''
+                    for i in range(len(list_of_words)):
+                        word += list_of_words[i] + ' '
+                    msg = visual.TextStim(win, text = word)
+                    msg.draw()
+                    win.flip()
+                    while clock.getTime() < 5:
+                        if event.getKeys(['q']):
+                            return True
+                
             if event.getKeys(['q']):
                 return True
             elif event.getKeys(['escape']):
@@ -170,16 +183,35 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
 
         mic.stop()  # stop recording
         audioClip = mic.getRecording()
+        #transcribe words 
+        list_of_words = (audioClip.transcribe(engine='sphinx')).words
+        word = ''
+        for i in range(len(list_of_words)):
+            word += list_of_words[i] + ' '
+        print(word)
+        
         print("Duration of conversation is: ", duration) 
         print("Total duration of audio clip is: ", audioClip.duration)  # should be ~duration time + plus time of session starts/session ends wav files seconds
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
         
-        # display "the session endss
+        #display transcribed words 
         clock.reset()
-        msg = visual.TextStim(win, text = 'The session ends')
+        msg = visual.TextStim(win, text = word)
         msg.draw()
         win.flip()
-        while clock.getTime() < 3:
+        while clock.getTime() < 2:
+            if event.getKeys(['q']):
+                return True
+            elif event.getKeys(['escape']):
+                win.close()
+                core.quit()
+        
+        # display "the session endss
+        clock.reset()
+        msg = visual.TextStim(win, text = 'the session ends')
+        msg.draw()
+        win.flip()
+        while clock.getTime() < 2:
             if event.getKeys(['q']):
                 return True
             elif event.getKeys(['escape']):
