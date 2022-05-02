@@ -19,6 +19,7 @@ from psychopy import sound, visual, core, gui, event, monitors
 from playsound import playsound 
 
 from psychopy.sound import Microphone
+from psychopy.sound import AudioClip
 from psychopy.sound import AudioDeviceInfo
 
 from psychopy.preferences import prefs 
@@ -121,7 +122,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         
         clock = core.Clock()
         #displays the session starts
-        msg = visual.TextStim(win, text = 'the session starts now')
+        msg = visual.TextStim(win, text = 'THE SESSION STARTS NOW')
         msg.draw()
         win.flip()
         while clock.getTime() < 2:
@@ -145,25 +146,29 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         core.wait(0.0)
         
         clock.reset()
-        print(clock.getTime())
         #kb = keyboard.Keyboard() only necessary for start and stop 
         #keys = kb.getKeys()
         # wait for on_dur seconds
-        i = 1
-        iterations = int(duration/5)
-        print(iterations)
+        caption_time = 4
+        iterations = int(duration/caption_time)
+        #print(iterations)
+        mic.stop()
+        audio_tot = mic.getRecording() 
+        mic.start()
         while(clock.getTime() < duration):
             #kb = keyboard.Keyboard() 
             #keys = kb.getKeys()
             #displays text if 1 is pressed, therapist/patient is talking
             #if '1' in keys:
             #if (clock.getTime() >= 5*i and clock.getTime() <=5.001*i):
-            for i in range(iterations):
-                if (clock.getTime() >=5*i and clock.getTime()<=5.01*i):
-                    print('reached this if statement' + str(clock.getTime()))
+            for i in range(1, iterations):
+                if (clock.getTime() >=caption_time*i and clock.getTime()<=(caption_time+0.001)*i):
+                    #print('reached this if statement' + str(clock.getTime()))
                     mic.stop() 
                     audio1 = mic.getRecording() 
+                    audio_tot = audio_tot + audio1
                     mic.start()
+                    #transcribe words every 5 seconds 
                     list_of_words = (audio1.transcribe(engine='sphinx')).words
                     word = ''
                     for i in range(len(list_of_words)):
@@ -171,7 +176,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
                     msg = visual.TextStim(win, text = word)
                     msg.draw()
                     win.flip()
-                    while clock.getTime() < 5:
+                    while clock.getTime() < caption_time:
                         if event.getKeys(['q']):
                             return True
                 
@@ -183,15 +188,16 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
 
         mic.stop()  # stop recording
         audioClip = mic.getRecording()
+        audio_tot = audio_tot + audioClip
         #transcribe words 
         list_of_words = (audioClip.transcribe(engine='sphinx')).words
         word = ''
         for i in range(len(list_of_words)):
             word += list_of_words[i] + ' '
-        print(word)
         
         print("Duration of conversation is: ", duration) 
-        print("Total duration of audio clip is: ", audioClip.duration)  # should be ~duration time + plus time of session starts/session ends wav files seconds
+        #print("Total duration of audio clip is: ", audioClip.duration) 
+        print("Total duration of audio total is: ", audio_tot.duration)# should be ~duration time + plus time of session starts/session ends wav files seconds
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
         
         #display transcribed words 
@@ -208,7 +214,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         
         # display "the session endss
         clock.reset()
-        msg = visual.TextStim(win, text = 'the session ends')
+        msg = visual.TextStim(win, text = 'THE SESSION ENDS')
         msg.draw()
         win.flip()
         while clock.getTime() < 2:
@@ -219,7 +225,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
                 core.quit()
         
         # save the recorded audio as a 'wav' file
-        audioClip.save(dateandtime)  
+        audio_tot.save(dateandtime)  
         
         #win.winHandle.maximize()
     else:
