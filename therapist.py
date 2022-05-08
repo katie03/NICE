@@ -121,39 +121,36 @@ song2 = sound.Sound('session_ends.wav')
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition_no, duration, video):
     #abort mechanism for if need to stop in the middle
-    '''path1='/Users/katiechen/Downloads/NICE'
-    os.chdir(path1)
-    session_starts = sound.Sound('session_starts.wav')
-    session_ends = sound.Sound('session_ends.wav')
-    time = 3'''
-    #prefs.general['audioDriver'] = [u'jack']
     if condition_no == 1:  
         #win.winHandle.minimize()
-        #opens the microphone
-        playsound(session_starts)
-        '''session_starts.play()
+        #plays 'the session starts' incompatible with sound packages 
+        #playsound(session_starts)
         
         clock = core.Clock()
-        while(clock.getTime() < time):
+        #displays the session starts
+        msg = visual.TextStim(win, text = 'THE SESSION STARTS NOW')
+        msg.draw()
+        win.flip()
+        while clock.getTime() < 2:
             if event.getKeys(['q']):
-                aborted = True
-                return aborted
+                return True
             elif event.getKeys(['escape']):
                 win.close()
                 core.quit()
-                
-        session_starts.play()'''
-                
+        
+        clock.reset()
+        msg = visual.TextStim(win, text = '')
+        msg.draw()
+        win.flip()
+        
+        #opens the microphone
         #device = index of device, add to first parameter of mic 
         mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
         #starts recording
         mic.start(when=None, waitForStart=0, stopTime=None) 
         print("Microphone started recording")
+        #print(mic.deviceName())
         core.wait(0.0)
-        #give instructions for when to click buttons to start talking 
-        '''msg = visual.TextStim(win, text = 'Press 1 to start talking, Press 2 when finished talking')
-        msg.draw()
-        win.flip()'''
         
         #kb = keyboard.Keyboard() only necessary for start and stop 
         #keys = kb.getKeys()
@@ -164,16 +161,6 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
             #keys = kb.getKeys()
             #displays text if 1 is pressed, therapist/patient is talking
             #if '1' in keys:
-            '''if event.getKeys(['1']):
-                msg.text = participant + ' is talking...'
-                msg.draw()
-                win.flip()
-            #displays text if 2 is pressed, therapist/patient is done talking
-            #elif '2' in keys:
-            elif event.getKeys(['2']): 
-                msg.text = participant + ' is done talking'
-                msg.draw()
-                win.flip()'''
             if event.getKeys(['q']):
                 return True
             elif event.getKeys(['escape']):
@@ -187,18 +174,19 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
         
         # play "the session ends" command
-        playsound(session_ends)
-        '''session_ends.play()
+        #playsound(session_ends)
         
-        clock = core.Clock()
-        while(clock.getTime() < time):
+        # display "the session endss
+        clock.reset()
+        msg = visual.TextStim(win, text = 'THE SESSION ENDS')
+        msg.draw()
+        win.flip()
+        while clock.getTime() < 2:
             if event.getKeys(['q']):
-                aborted = True
-                return aborted
+                return True
             elif event.getKeys(['escape']):
                 win.close()
-                core.quit()'''
-        
+                core.quit()
         # save the recorded audio as a 'wav' file
         audioClip.save(dateandtime)  
         
