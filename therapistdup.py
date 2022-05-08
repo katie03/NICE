@@ -139,16 +139,17 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         
         #opens the microphone       
         #device = index of device, add to first parameter of mic 
+        #mic = Microphone(device = ___, channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
         mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
         #starts recording
         mic.start(when=None, waitForStart=0, stopTime=None) 
         print("Microphone started recording")
         core.wait(0.0)
-        
         clock.reset()
         #kb = keyboard.Keyboard() only necessary for start and stop 
         #keys = kb.getKeys()
-        # wait for on_dur seconds
+
+        #defines how long it takes for captions to switch 
         caption_time = 4
         iterations = int(duration/caption_time)
         #print(iterations)
@@ -158,9 +159,6 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         while(clock.getTime() < duration):
             #kb = keyboard.Keyboard() 
             #keys = kb.getKeys()
-            #displays text if 1 is pressed, therapist/patient is talking
-            #if '1' in keys:
-            #if (clock.getTime() >= 5*i and clock.getTime() <=5.001*i):
             for i in range(1, iterations):
                 if (clock.getTime() >=caption_time*i and clock.getTime()<=(caption_time+0.001)*i):
                     #print('reached this if statement' + str(clock.getTime()))
@@ -168,11 +166,15 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
                     audio1 = mic.getRecording() 
                     audio_tot = audio_tot + audio1
                     mic.start()
-                    #transcribe words every 5 seconds 
+                    
+                    #replace w/ path of file on computer if uses google api 
+                    #path1='/Users/katiechen/Downloads/NICE/key.json'
+                    #os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ''
                     list_of_words = (audio1.transcribe(engine='sphinx')).words
                     word = ''
                     for i in range(len(list_of_words)):
                         word += list_of_words[i] + ' '
+                    #gets captions and displays it 
                     msg = visual.TextStim(win, text = word)
                     msg.draw()
                     win.flip()
@@ -197,7 +199,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         
         print("Duration of conversation is: ", duration) 
         #print("Total duration of audio clip is: ", audioClip.duration) 
-        print("Total duration of audio total is: ", audio_tot.duration)# should be ~duration time + plus time of session starts/session ends wav files seconds
+        print("Total duration of audio total is: ", audio_tot.duration)# should be ~duration time 
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
         
         #display transcribed words 
