@@ -85,40 +85,38 @@ if not dummyMode:
 else:
     tk = pylink.EyeLink(None)
 
-begin_session = 'session_starts.wav'
-end_session = 'session_ends.wav'
+#begin_session = 'session_starts.wav'
+#end_session = 'session_ends.wav'
 
-#path1= '/Users/katiechen/Downloads/NICE'
-#os.chdir(path1)
-#begin_session = sound.Sound('session_starts.wav')
-'''end_session = sound.Sound('session_ends.wav', stereo=True, hamming=True)
-end_session.setVolume(1.0)
-end_session.setSound('session_ends.wav', secs=2, hamming=True)'''
-'''song1= sound.Sound('session_starts.wav', stereo = True, hamming = True)
-song1.setVolume(1.0)
-
-song2= sound.Sound('session_ends.wav')
-song2.setVolume(1.0)'''
+path1= '/Users/katiechen/Downloads/NICE'
+os.chdir(path1)
+begin_session = sound.Sound('session_starts.wav')
+end_session = sound.Sound('session_ends.wav', stereo=True, hamming=True)
 
 #song3= sound.Sound('close_eyes.wav')
 #This function gives instructions for the therapist/patient conversation 
 def sessionStartEnd(participant_no, win,on_dur, off_dur, condition_no, duration, video):
-    '''path1='/Users/katiechen/Downloads/NICE'
-    os.chdir(path1)
-    session_starts = sound.Sound('session_starts.wav', stereo = False)
-    session_ends = sound.Sound('session_ends.wav', stereo = False)'''
     #abort mechanism for if need to stop in the middle
     #aborted = False
     if condition_no == 1: #1: eyeopentask
         #win.winHandle.minimize()
 
         # play "open your eyes" command followed by 
-        playsound(begin_session)
+        #playsound(begin_session)
         #session_starts.play()
-        #time = 3
-        #song2.play()
-
-        # wait for on_dur seconds
+        time = 3
+        begin_session.play()
+        clock = core.Clock()
+        while(clock.getTime() < time):
+            if event.getKeys(['q']):
+                aborted = True
+                return aborted
+            elif event.getKeys(['escape']):
+                win.close()
+                core.quit()
+        clock.reset()
+        
+        # wait for duration 
         clock = core.Clock()
         while(clock.getTime() < duration):
             if event.getKeys(['q']):
@@ -128,10 +126,9 @@ def sessionStartEnd(participant_no, win,on_dur, off_dur, condition_no, duration,
                 win.close()
                 core.quit()
                 
-        # play "close your eyes" command
-        #song2.pause()
-        playsound(end_session)
-        session_ends.play()
+        # play "session ends" command
+        #playsound(end_session)
+        end_session.play()
     
         clock = core.Clock()
         while(clock.getTime() < time):
