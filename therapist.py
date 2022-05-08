@@ -144,7 +144,9 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         win.flip()
         
         #opens the microphone
-        #device = index of device, add to first parameter of mic 
+        #device = index of device, add to first parameter of mic, 9 in EVE? USB Beringer Audio devices may change 
+        #to see list of devices type in terminal 1. python 2. import sounddevice as sd 3. sd.query_devices() 
+        #mic = Microphone(device = ___, channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
         mic = Microphone(channels=1, sampleRateHz=None, streamBufferSecs = duration+60, policyWhenFull = 'warn', audioLatencyMode = 3, audioRunMode = 1)  
         #starts recording
         mic.start(when=None, waitForStart=0, stopTime=None) 
@@ -154,13 +156,8 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         
         #kb = keyboard.Keyboard() only necessary for start and stop 
         #keys = kb.getKeys()
-        # wait for on_dur seconds
         clock = core.Clock()
         while(clock.getTime() < duration):
-            #kb = keyboard.Keyboard() 
-            #keys = kb.getKeys()
-            #displays text if 1 is pressed, therapist/patient is talking
-            #if '1' in keys:
             if event.getKeys(['q']):
                 return True
             elif event.getKeys(['escape']):
@@ -170,7 +167,7 @@ def sessionStartEnd(participant_no, participant, win, on_dur, off_dur, condition
         mic.stop()  # stop recording
         audioClip = mic.getRecording()
         print("Duration of conversation is: ", duration) 
-        print("Total duration of audio clip is: ", audioClip.duration)  # should be ~duration time + plus time of session starts/session ends wav files seconds
+        print("Total duration of audio clip is: ", audioClip.duration)  # should be ~duration time
         dateandtime = time.strftime("%Y-%m-%d_%H.%M.%S") + '.wav'
         
         # play "the session ends" command
